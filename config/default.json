@@ -1,9 +1,0 @@
-{
-    "db": {
-        "pguser": "postgres",
-        "pghost": "localhost",
-        "pgpassword": "123",
-        "pgport": "5432",
-        "pgdatabase": "postgis"
-    }
-}

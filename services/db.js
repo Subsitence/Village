@@ -1,15 +1,15 @@
-const { Pool } = require("pg");
-const config = require("config");
+const Sequelize = require("sequelize");
+const configs = require("../configs/default.js");
 
-const pool = new Pool({
-  user: config.get("db.pguser"),
-  host: config.get("db.pghost"),
-  database: config.get("db.pgdatabase"),
-  password: config.get("db.pgpassword"),
-  port: config.get("db.pgport"),
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+const connecToPostgres = async () => {
+  const sequelize = new Sequelize(configs.postgres.options);
+  try {
+    await sequelize.authenticate();
+    console.log("Connection has been established successfully!");
+    return sequelize;
+  } catch (err) {
+    console.error("Unable to connect to the database: ", err);
+  }
+};
 
-module.exports = pool;
+module.exports = connecToPostgres;

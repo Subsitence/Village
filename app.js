@@ -7,19 +7,24 @@
 */
 
 const express = require("express");
-const fileUpload = require("express-fileupload");
+// const fileUpload = require("express-fileupload");
 const cors = require("cors");
-require("dotenv").config();
+const configs = require("./configs/default.js");
 const router = require("./routers/index.js");
+const connecToPostgres = require("./services/db.js");
+require("dotenv").config();
+
 const port = process.env.PORT || 5000;
 const app = express();
+
+configs.postgres.client = connecToPostgres();
 
 const corsOptions = {
   origin: "*",
 };
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use("/", router);
 
 app.listen(port, () => {

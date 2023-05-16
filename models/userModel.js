@@ -1,31 +1,66 @@
-const pool = require("../services/db.js");
+const configs = require("../configs/default.js");
+const { Sequelize, Model, DataTypes } = require("sequelize");
 
-class User {
-  static async getAll() {
-    const client = await pool.connect();
-    const response = await client.query("SELECT * FROM public.users");
-    client.release();
-    return response.rows;
-  }
+const sequelize = new Sequelize(configs.postgres.options);
 
-  static async getByUserName(username) {
-    const client = await pool.connect();
-    const response = await client.query(
-      `SELECT * FROM public.users WHERE username = '${username}'`
-    );
-    client.release();
-    return response.rows;
-  }
-
-  static async insertUser(payload) {
-    const client = await pool.connect();
-    const response = await client.query(
-      `INSERT INTO users(name, username, password) 
-      VALUES ('${payload.name}', '${payload.username}', '${payload.password}')`
-    );
-    client.release();
-    return response;
-  }
+class User extends Model {
+  otherPublicField;
 }
+
+User.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: Sequelize.literal("uuid_generate_v4()"),
+      allowNull: false,
+      primaryKey: true,
+    },
+
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    created_at: {
+      type: "TIMESTAMP",
+      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      allowNull: false,
+    },
+
+    updated_at: {
+      type: "TIMESTAMP",
+      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    freezeTableName: true,
+    tableName: "users",
+    timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ["username"], // Whatever other field you need to make unique
+      },
+    ],
+  }
+);
+
+(async () => {
+  await sequelize.sync();
+  console.log("Sync model successfully");
+})();
 
 module.exports = User;
