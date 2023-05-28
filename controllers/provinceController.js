@@ -1,4 +1,4 @@
-const Province = require("../models/provinceModel.js");
+const { Province } = require("../models");
 const { Sequelize } = require("sequelize");
 
 exports.get = async (req, res) => {
